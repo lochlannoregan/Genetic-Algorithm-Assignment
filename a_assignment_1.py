@@ -1,5 +1,8 @@
 import random
-import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib import colors
+from matplotlib.ticker import PercentFormatter
 
 
 def one_max_problem():
@@ -18,6 +21,8 @@ def one_max_problem():
     k_ways = 4
     generations = 100
     population = []
+    average_generation_fitness = []
+
     # Initialise population
     for i in range(population_size):
         # getrandbits often gives a values less than the specified number so generating larger bit size and slicing 20
@@ -26,9 +31,7 @@ def one_max_problem():
                                                                                     representation_length)}
         population.append(chromosome)
 
-    # for chromosome in population:
-    #     print(chromosome['fitness'])
-    # Evolve population
+    # Evolve
     for generation in range(generations):
         temp_population = []
         # Apply crossover
@@ -50,7 +53,23 @@ def one_max_problem():
         for individual in population:
             average += individual['fitness']
         average /= population_size
+        average_generation_fitness.append(average)
         print("Generation: ", generation, format(average, ".3f"))
+
+    # Output matplotlib graph
+    graph_results(average_generation_fitness, generations, "One-Max GA")
+
+
+def graph_results(average_generation_fitness, generations, title):
+    plt.rc('axes')
+    x = list(range(1, generations + 1))
+    plt.plot(x, average_generation_fitness, linewidth=5)
+    plt.xlim(1, generations)
+    plt.ylim(0, 1)
+    plt.xlabel("Generations")
+    plt.ylabel("Average Population Fitness")
+    plt.title(title)
+    plt.show()
 
 
 def elitism(temp_population, number_of_individuals_for_elitism, population, population_size, k_ways):
