@@ -1,14 +1,20 @@
 import random
+import matplotlib
 
 
 def one_max_problem():
     print("Starting one max problem")
     population_size = 100
+    # crossover, mutation and elitism must add to 1.0
     crossover_percentage = 0.8
     mutation_percentage = 0.01
+    elitism_percentage = 0.19
+
     representation_length = 20
     number_of_individuals_for_crossover = int(population_size * crossover_percentage)
-    number_of_parents_for_mutation = int(population_size * mutation_percentage)
+    number_of_individuals_for_mutation = int(population_size * mutation_percentage)
+    number_of_individuals_for_elitism = int(population_size * elitism_percentage)
+    max_number_bits_flip_mutation = 1
     k_ways = 4
     generations = 100
     population = []
@@ -28,14 +34,52 @@ def one_max_problem():
         # Apply crossover
         crossover(temp_population, number_of_individuals_for_crossover, population, population_size, k_ways,
                   representation_length)
-        print("Hello")
+
         # Apply mutation
+        mutation(temp_population, number_of_individuals_for_mutation, population, population_size, k_ways, 
+                 representation_length, max_number_bits_flip_mutation)
 
-        # Merge into population
+        # Perform elitism to complete population for next generation
+        elitism(temp_population, number_of_individuals_for_elitism, population, population_size, k_ways)
 
-        # asses fitness
-        # for chromosome in population:
-        #     print(fitness_function(chromosome['representation']), chromosome['fitness'])
+        # Assemble crossover, mutation and elitism by setting population for next generation
+        population = temp_population
+
+        # Average fitness of population
+        average = 0
+        for individual in population:
+            average += individual['fitness']
+        average /= population_size
+        print("Generation: ", generation, format(average, ".3f"))
+
+
+def elitism(temp_population, number_of_individuals_for_elitism, population, population_size, k_ways):
+    for i in range(number_of_individuals_for_elitism):
+        temp_population.append(k_ways_tournament_selection(population, population_size, k_ways))
+
+
+def mutation(temp_population, number_of_individuals_for_mutation, population, population_size, k_ways,
+             representation_length, max_number_bits_flip_mutation):
+    individuals_to_mutate = []
+    for i in range(number_of_individuals_for_mutation):
+        individuals_to_mutate.append(k_ways_tournament_selection(population, population_size, k_ways))
+    for individual in individuals_to_mutate:
+        temp_population.append(mutate_bit_string(individual, representation_length, max_number_bits_flip_mutation))
+
+
+def mutate_bit_string(individual, representation_length, max_number_bits_flip_mutation):
+    number_of_bits_to_flip = random.randint(1, max_number_bits_flip_mutation)
+    for i in range(number_of_bits_to_flip):
+        position_to_flip = random.randint(0, 19)
+        value = individual['representation'][position_to_flip]
+        if individual['representation'][position_to_flip] == '1':
+            individual['representation'] = individual['representation'][:position_to_flip] + "0" + \
+                                           individual['representation'][position_to_flip + 1:]
+        elif individual['representation'][position_to_flip] == '0':
+            individual['representation'] = individual['representation'][:position_to_flip] + "1" + \
+                                           individual['representation'][position_to_flip + 1:]
+    individual['fitness'] = fitness_function(individual['representation'], representation_length)
+    return individual
 
 
 def crossover(temp_population, number_of_individuals_for_crossover, population, population_size, k_ways,
