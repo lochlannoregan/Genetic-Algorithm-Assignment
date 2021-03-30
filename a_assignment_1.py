@@ -30,7 +30,7 @@ def evolve_ga(graph_title):
         temp_population = []
         # Apply crossover
         crossover(temp_population, population, number_of_individuals_for_crossover, k_ways, population_size,
-                  fitness_function)
+                  fitness_function, representation_length)
         # Apply mutation
         mutation(temp_population, population, number_of_individuals_for_mutation, k_ways, maximum_mutation_bits_to_flip,
                  population_size, fitness_function, representation_length)

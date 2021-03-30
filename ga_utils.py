@@ -54,22 +54,23 @@ def mutate_bit_string(individual, maximum_mutation_bits_to_flip, fitness_functio
 
 
 def crossover(temp_population, population, number_of_individuals_for_crossover, k_ways, population_size,
-              fitness_function):
+              fitness_function, representation_length):
     crossover_parents = []
     for i in range(number_of_individuals_for_crossover):
         crossover_parents.append(k_ways_tournament_selection(population, k_ways, population_size))
     index = 1
     while index < len(crossover_parents):
         crossover_one, crossover_two = crossover_bit_strings(crossover_parents[index - 1], crossover_parents[index],
-                                                             fitness_function)
+                                                             fitness_function, representation_length)
         temp_population.append(crossover_one)
         temp_population.append(crossover_two)
         index += 2
 
 
-def crossover_bit_strings(individual_one, individual_two, fitness_function):
-    crossover_one_representation = individual_one['representation'][0:10] + individual_two['representation'][10:20]
-    crossover_two_representation = individual_two['representation'][0:10] + individual_one['representation'][10:20]
+def crossover_bit_strings(individual_one, individual_two, fitness_function, representation_length):
+    midpoint = representation_length // 2
+    crossover_one_representation = individual_one['representation'][0:midpoint] + individual_two['representation'][midpoint:representation_length]
+    crossover_two_representation = individual_two['representation'][0:midpoint] + individual_one['representation'][midpoint:representation_length]
     crossover_one = {'representation': crossover_one_representation, 'fitness': fitness_function(
         crossover_one_representation)}
     crossover_two = {'representation': crossover_two_representation, 'fitness': fitness_function(

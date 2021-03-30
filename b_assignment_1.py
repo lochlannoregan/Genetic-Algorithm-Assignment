@@ -4,7 +4,7 @@ knapsack_item_values = [78, 35, 89, 36, 94, 75, 74, 79, 80, 16]
 knapsack_item_weights = [18, 9, 23, 20, 59, 61, 70, 75, 76, 30]
 # Problem 1 - 103
 # Problem 2 - 156
-knapsack_weight_limit = 156
+knapsack_weight_limit = 103
 
 population_size = 1000
 generations = 500
@@ -32,7 +32,7 @@ def knapsack_problem():
         temp_population = []
         # Apply crossover
         crossover(temp_population, population, number_of_individuals_for_crossover, k_ways, population_size,
-                  fitness_function)
+                  fitness_function, representation_length)
         # Apply mutation
         mutation(temp_population, population, number_of_individuals_for_mutation, k_ways, maximum_mutation_bits_to_flip,
                  population_size, fitness_function, representation_length)
