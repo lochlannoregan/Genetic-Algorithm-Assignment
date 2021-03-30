@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 
 
 one_max_problem = False
-evolving_target_string = True
-deceptive_landscape_problem = False
+evolving_target_string = False
+deceptive_landscape_problem = True
 
 population_size = 100
 
@@ -30,6 +30,8 @@ def evolve_ga(graph_title):
     population = []
     average_generation_fitness = []
 
+    once = False
+
     # Initialise population
     initialise_population(population)
 
@@ -47,6 +49,20 @@ def evolve_ga(graph_title):
 
         # Assemble crossover, mutation and elitism by setting population for next generation
         population = temp_population
+
+        # Manually influencing deceptive landscape
+        # once_off_representation = "00000000000000000000"
+        # if not once:
+        #     population[2] = {'representation': once_off_representation, 'fitness': fitness_function(
+        #         once_off_representation)}
+        #     population[21] = {'representation': once_off_representation, 'fitness': fitness_function(
+        #         once_off_representation)}
+        #     population[42] = {'representation': once_off_representation, 'fitness': fitness_function(
+        #         once_off_representation)}
+        #     population[41] = {'representation': once_off_representation, 'fitness': fitness_function(
+        #         once_off_representation)}
+        #     print("Wasup")
+        #     once = True
 
         # Average fitness of population
         average = 0
@@ -140,7 +156,10 @@ def fitness_function(individual):
                 fitness_to_return += 1 / representation_length
         return fitness_to_return
     elif deceptive_landscape_problem:
-        print("Deceptive lS")
+        fitness_to_return = (individual.count('1') / representation_length) / 2
+        if fitness_to_return == 0.0:
+            fitness_to_return = 1.0
+        return fitness_to_return
     else:
         print("Fitness function undefined")
 
@@ -159,7 +178,7 @@ def k_ways_tournament_selection(population, k_ways):
 
 
 def main():
-    evolve_ga("Evolving Target String")
+    evolve_ga("Deceptive Landscape")
 
 
 if __name__ == '__main__':
