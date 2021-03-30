@@ -2,22 +2,23 @@ import random
 import matplotlib.pyplot as plt
 
 
-def initialise_population(population, population_size, fitness_function):
+def initialise_population(population, population_size, fitness_function, representation_length):
     for i in range(population_size):
-        # getrandbits often gives a values less than the specified number so generating larger bit size and slicing 20
-        representation = str(bin(random.getrandbits(30))[2:22])
+        representation = ""
+        for j in range(representation_length):
+            representation += str(random.randint(0, 1))
         chromosome = {'representation': representation, 'fitness': fitness_function(representation)}
         population.append(chromosome)
 
 
-def graph_results(average_generation_fitness, generations, title):
+def graph_results(generation_fitness_list, generations, title, y_label, y_limit):
     plt.rc('axes')
     x = list(range(1, generations + 1))
-    plt.plot(x, average_generation_fitness, linewidth=5)
+    plt.plot(x, generation_fitness_list, linewidth=5)
     plt.xlim(1, generations)
-    plt.ylim(0, 1)
+    plt.ylim(0, y_limit)
     plt.xlabel("Generations")
-    plt.ylabel("Average Population Fitness")
+    plt.ylabel(y_label)
     plt.title(title)
     plt.show()
 
@@ -28,18 +29,19 @@ def elitism(temp_population, population, number_of_individuals_for_elitism, k_wa
 
 
 def mutation(temp_population, population, number_of_individuals_for_mutation, k_ways, maximum_mutation_bits_to_flip,
-             population_size, fitness_function):
+             population_size, fitness_function, representation_length):
     individuals_to_mutate = []
     for i in range(number_of_individuals_for_mutation):
         individuals_to_mutate.append(k_ways_tournament_selection(population, k_ways, population_size))
     for individual in individuals_to_mutate:
-        temp_population.append(mutate_bit_string(individual, maximum_mutation_bits_to_flip, fitness_function))
+        temp_population.append(mutate_bit_string(individual, maximum_mutation_bits_to_flip, fitness_function,
+                                                 representation_length))
 
 
-def mutate_bit_string(individual, maximum_mutation_bits_to_flip, fitness_function):
+def mutate_bit_string(individual, maximum_mutation_bits_to_flip, fitness_function, representation_length):
     number_of_bits_to_flip = random.randint(1, maximum_mutation_bits_to_flip)
     for i in range(number_of_bits_to_flip):
-        position_to_flip = random.randint(0, 19)
+        position_to_flip = random.randint(0, representation_length - 1)
         value = individual['representation'][position_to_flip]
         if individual['representation'][position_to_flip] == '1':
             individual['representation'] = individual['representation'][:position_to_flip] + "0" + \
